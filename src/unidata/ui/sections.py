@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+import base64
 import math
 from pathlib import Path
 
@@ -64,6 +65,8 @@ def render_header(
     show_section_nav: bool = True,
 ) -> None:
     """Render compact Operate-mode dashboard header with provenance and anchor navigation."""
+    logo_path = Path(__file__).resolve().parents[3] / "design" / "unidata-app-icon.svg"
+    logo_data = base64.b64encode(logo_path.read_bytes()).decode("ascii")
     scope_badge = scope_label or ("Recorte filtrado" if is_filtered else "Base completa")
     nav_links = (
         """
@@ -82,8 +85,9 @@ def render_header(
         <header class="unidata-header">
             <div class="unidata-brand-row">
                 <div class="unidata-brand-title-wrap">
-                    <span class="unidata-brand-bar" aria-hidden="true"></span>
+                    <img class="unidata-logo" src="data:image/svg+xml;base64,{logo_data}" alt="" aria-hidden="true">
                     <div>
+                        <div class="unidata-brand-name">UNIDATA</div>
                         <h1 class="unidata-page-title">{esc(APP_TITLE)} — {esc(APP_SUBTITLE)}</h1>
                         <p class="unidata-context-line">Análise histórica da base Olist · {esc(data_notice)}</p>
                     </div>

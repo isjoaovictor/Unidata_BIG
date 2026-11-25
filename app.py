@@ -113,8 +113,8 @@ def _format_month_option(value: str) -> str:
 def main() -> None:
     """Run the Unidata Streamlit dashboard application."""
     st.set_page_config(
-        page_title="Unidata — E-commerce Insights",
-        page_icon="📊",
+        page_title="UNIDATA | E-commerce Insights",
+        page_icon=str(Path(__file__).resolve().parent / "design" / "unidata-app-icon.svg"),
         layout="wide",
         initial_sidebar_state="collapsed",
     )
