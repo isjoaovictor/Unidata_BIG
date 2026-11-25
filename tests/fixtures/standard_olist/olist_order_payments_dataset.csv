@@ -1,0 +1,6 @@
+order_id,payment_sequential,payment_type,payment_installments,payment_value
+0001001,1,credit_card,2,100.00
+0001001,2,voucher,1,75.50
+0001002,1,credit_card,1,112.50
+0001002,2,voucher,1,112.50
+0001004,1,boleto,1,9999.99

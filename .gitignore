@@ -1,0 +1,34 @@
+# Python & caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Virtual environments & secrets
+.venv/
+venv/
+ENV/
+.env
+
+# Licensed Olist CSVs & local data (keep data/.gitkeep and tests/fixtures/*.csv)
+data/*
+!data/.gitkeep
+olist_*.csv
+product_category_name_translation.csv
+!tests/fixtures/*.csv
+!tests/fixtures/**/*.csv
+
+# Archives, OS & agent metadata
+*.zip
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.agents/

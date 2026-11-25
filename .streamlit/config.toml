@@ -1,0 +1,19 @@
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "dark"
+primaryColor = "#0063e1"
+backgroundColor = "#000000"
+secondaryBackgroundColor = "#040910"
+textColor = "#ffffff"
+borderColor = "#2b2c2e"
+dataframeBorderColor = "#2b2c2e"
+dataframeHeaderBackgroundColor = "#0d0d0d"
+dataframeHeaderTextColor = "#ffffff"
+baseRadius = "8px"
+buttonRadius = "8px"
+font = "sans-serif"

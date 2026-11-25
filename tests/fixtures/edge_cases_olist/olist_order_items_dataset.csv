@@ -1,0 +1,8 @@
+order_id,order_item_id,product_id,price,freight_value
+E001,1,PR01,150.00,10.00
+E001,2,PR01,-20.00,5.00
+E001,3,PR01,N/A,5.00
+E001,4,PR01,,5.00
+E002,1,PR_MISSING,75.00,8.00
+E005,1,PR01,-5.00,5.00
+E006,1,PR01,500.00,10.00

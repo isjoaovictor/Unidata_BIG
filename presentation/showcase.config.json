@@ -1,0 +1,72 @@
+{
+  "project": {
+    "id": "unidata",
+    "name": "Unidata",
+    "tagline": "Painel local que transforma a base pública da Olist em KPIs, sazonalidade, segmentos RFM e recomendações explicáveis.",
+    "origin": "MVP acadêmico de Big Data definido em formato Spec-Driven Development (spec.md, requirements.md, design.md, tasks.md). Nome de trabalho: E-commerce Insights."
+  },
+  "brand": {
+    "colors": {
+      "background": "#000000",
+      "foreground": "#ffffff",
+      "accent": "#0063e1",
+      "surface": "#040910",
+      "card": "#0d0d0d",
+      "muted": "#858585"
+    },
+    "typography": {
+      "display": "Inter, system-ui, sans-serif",
+      "body": "Inter, system-ui, sans-serif",
+      "mono": "ui-monospace, Consolas, monospace",
+      "note": "Sem fontes externas: a pilha usa Inter se instalada e cai para a fonte do sistema. Fonte do guia: design.md."
+    },
+    "media": { "context": "desktop", "reference_viewport": "1440x900" },
+    "logo": { "asset": null, "fallback": "Texto 'Unidata' com detalhe azul. O projeto não possui logotipo oficial." },
+    "style": "Instrumento analítico escuro, preciso e contido (referência REKKI adaptada em design.md)."
+  },
+  "experience": {
+    "chapters": [
+      "Introdução",
+      "Objetivos",
+      "Fundamentação teórica",
+      "Metodologia / pipeline de dados",
+      "Ferramentas utilizadas",
+      "Resultados obtidos",
+      "Discussão e limitações",
+      "Conclusão e referências"
+    ],
+    "interactions": ["navegação por capítulos (teclado e botões)", "pipeline passo a passo (Simulação ilustrativa)", "alternância implementado/planejado", "filtro de tecnologia por etapa"]
+  },
+  "features": [
+    { "name": "Carga e validação dos CSVs", "status": "implemented", "summary": "Valida arquivos e colunas e devolve instruções de onboarding.", "evidence": "src/unidata/loader.py; tests/test_loader.py" },
+    { "name": "Limpeza e junção sem duplicar receita", "status": "implemented", "summary": "Receita = soma de price de pedidos delivered, sem frete e sem payment_value.", "evidence": "src/unidata/pipeline.py; tests/test_pipeline.py" },
+    { "name": "KPIs, série mensal e categorias", "status": "implemented", "summary": "Receita de produtos, pedidos, clientes únicos, ticket médio, mês a mês e ranking de categorias.", "evidence": "src/unidata/analytics.py; tests/test_analytics.py" },
+    { "name": "RFM + K-means", "status": "implemented", "summary": "k=4, StandardScaler, random_state=42, n_init=10.", "evidence": "src/unidata/segmentation.py; tests/test_segmentation.py" },
+    { "name": "Recomendações explicáveis", "status": "implemented", "summary": "Regras determinísticas com evidência numérica e ressalva.", "evidence": "src/unidata/recommendations.py; tests/test_recommendations.py" },
+    { "name": "Painel Streamlit em pt-BR", "status": "implemented", "summary": "Filtros de ano/mês, gráficos, estados de erro e tema escuro.", "evidence": "app.py; src/unidata/ui/; tests/test_ui_smoke.py" },
+    { "name": "Execução sobre a base real da Olist", "status": "unverified", "summary": "Os CSVs não são versionados; os testes usam apenas fixtures sintéticas.", "evidence": "README.md (seção Limitações)" },
+    { "name": "Upload de outra base, previsão de vendas, disparo de campanhas", "status": "planned", "summary": "Fora do escopo do MVP.", "evidence": "spec.md, seção 4 (Fora de escopo)" }
+  ],
+  "technology": [
+    { "name": "Python", "role": "Linguagem única do projeto", "reason": "Ecossistema de dados e prototipagem rápida", "status": "implemented" },
+    { "name": "pandas", "role": "ETL em memória", "reason": "Juntar cinco tabelas e agregar por mês, categoria e cliente", "status": "implemented" },
+    { "name": "scikit-learn", "role": "StandardScaler e KMeans", "reason": "Segmentar clientes por recência, frequência e gasto de forma reprodutível", "status": "implemented" },
+    { "name": "Streamlit", "role": "Interface web local", "reason": "Painel interativo sem backend próprio", "status": "implemented" },
+    { "name": "Plotly", "role": "Gráficos", "reason": "Tooltips com valor e unidade", "status": "implemented" },
+    { "name": "pytest + Playwright", "role": "Testes", "reason": "Unitários e ponta a ponta no navegador sobre fixtures sintéticas", "status": "implemented" }
+  ],
+  "sources": [
+    { "name": "Olist - Brazilian E-Commerce Public Dataset (Kaggle)", "url": "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce", "checked_at": "2026-11-25" },
+    { "name": "CC BY-NC-SA 4.0", "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "checked_at": "2026-11-25" },
+    { "name": "project_showcase_skill", "url": "https://github.com/isjoaovictor/project_showcase_skill", "checked_at": "2026-11-25" },
+    { "name": "spec.md", "url": "../spec.md", "checked_at": "2026-11-25" },
+    { "name": "design.md", "url": "../design.md", "checked_at": "2026-11-25" },
+    { "name": "README.md", "url": "../README.md", "checked_at": "2026-11-25" }
+  ],
+  "constraints": [
+    "Nenhuma métrica da base real da Olist é exibida: os números vêm da fixture sintética e estão rotulados.",
+    "Simulações têm o rótulo 'Simulação ilustrativa'.",
+    "Sem quiz, exercício ou avaliação.",
+    "Uso exclusivamente não comercial dos dados (CC BY-NC-SA 4.0)."
+  ]
+}

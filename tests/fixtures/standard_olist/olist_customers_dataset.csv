@@ -1,0 +1,7 @@
+customer_id,customer_unique_id,customer_zip_code_prefix,customer_city,customer_state
+000010,U00001,01001,sao paulo,SP
+000011,U00001,01001,sao paulo,SP
+000020,U00002,20040,rio de janeiro,RJ
+000030,U00003,30130,belo horizonte,MG
+000040,U00004,80010,curitiba,PR
+000050,U00005,40010,salvador,BA

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unidata — apresentação do projeto</title>
+<style>
+:root{
+  --canvas:#000000; --surface:#040910; --card:#0d0d0d; --control:#1f1f1f; --elevated:#2b2c2e;
+  --accent:#0063e1; --text:#ffffff; --muted:#a0a0a0; --subtle:#979797;
+  --border:rgba(255,255,255,.12); --focus:#69a7ff; --ok:#4cc38a; --warn:#f5a524; --info:#69a7ff;
+  --font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+  --radius:16px; --gap:16px; --dur:180ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--canvas);color:var(--text);font:16px/1.6 var(--font);font-variant-numeric:tabular-nums}
+a{color:var(--focus)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+h1:focus-visible,h2:focus-visible{outline:none}
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;z-index:50}
+.skip:focus{left:8px}
+header.top{position:sticky;top:0;z-index:20;background:rgba(0,0,0,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+.top-in{max-width:1440px;margin:0 auto;padding:12px 24px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-weight:600;font-size:18px;letter-spacing:.01em}
+.brand i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:middle}
+.brand small{color:var(--muted);font-weight:400;margin-left:8px;font-size:13px}
+.progress{height:3px;background:var(--control)}
+.progress b{display:block;height:100%;width:12.5%;background:var(--accent);transition:width var(--dur) ease}
+.layout{max-width:1440px;margin:0 auto;padding:24px;display:grid;grid-template-columns:260px 1fr;gap:32px}
+nav.index{position:sticky;top:84px;align-self:start}
+nav.index ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+nav.index button{width:100%;text-align:left;background:transparent;color:var(--muted);border:1px solid transparent;border-radius:8px;padding:10px 12px;min-height:44px;font:inherit;font-size:14px;cursor:pointer}
+nav.index button:hover{background:var(--control);color:var(--text)}
+nav.index button[aria-current="step"]{background:var(--card);border-color:var(--border);color:var(--text);box-shadow:inset 3px 0 0 var(--accent)}
+nav.index .n{font-family:var(--mono);color:var(--subtle);margin-right:8px;font-size:12px}
+.mobile-index{display:none}
+select{background:var(--control);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-height:44px;font:inherit;width:100%}
+main{min-width:0}
+.chapter{display:none;animation:fade var(--dur) ease}
+.chapter.is-active{display:block}
+.no-js .chapter{display:block;margin-bottom:48px}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.eyebrow{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px}
+h1{font-size:clamp(34px,6vw,64px);line-height:1.05;margin:0 0 16px;font-weight:600;letter-spacing:-.01em}
+h2{font-size:clamp(26px,3.6vw,40px);line-height:1.15;margin:0 0 16px;font-weight:600}
+h3{font-size:20px;margin:0 0 8px;font-weight:600}
+.lead{font-size:clamp(18px,2vw,22px);color:#d6d6d6;max-width:62ch;margin:0 0 24px}
+p{max-width:70ch;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;overflow-wrap:anywhere}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gap)}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap)}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap)}
+.stack{display:grid;gap:var(--gap)}
+.tag{display:inline-block;font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
+.tag.ok{color:var(--ok);border-color:rgba(76,195,138,.5)}
+.tag.warn{color:var(--warn);border-color:rgba(245,165,36,.5)}
+.tag.info{color:var(--info);border-color:rgba(105,167,255,.5)}
+.label{display:inline-block;background:rgba(245,165,36,.12);color:var(--warn);border:1px solid rgba(245,165,36,.5);border-radius:8px;padding:4px 10px;font-size:13px;font-weight:600}
+.label.data{background:rgba(105,167,255,.1);color:var(--info);border-color:rgba(105,167,255,.5)}
+.muted{color:var(--muted)}
+.note{font-size:14px;color:var(--muted)}
+ul.clean{margin:0;padding-left:20px}
+ul.clean li{margin:6px 0;max-width:70ch}
+code{font-family:var(--mono);font-size:.9em;background:var(--control);padding:1px 6px;border-radius:6px}
+.kpi{font-size:clamp(26px,3vw,36px);font-weight:600;line-height:1.1}
+.kpi-l{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:13px}
+td.num,th.num{text-align:right}
+.scroll{overflow-x:auto;border-radius:12px}
+.bar{display:grid;grid-template-columns:minmax(110px,170px) 1fr 70px;gap:12px;align-items:center;margin:10px 0;font-size:14px}
+.bar .track{height:14px;background:var(--control);border-radius:7px;overflow:hidden}
+.bar .fill{height:100%;background:var(--accent)}
+.bar .v{text-align:right}
+.btn{background:var(--control);color:var(--text);border:1px solid var(--border);border-radius:999px;padding:10px 18px;min-height:44px;font:inherit;font-size:14px;cursor:pointer;transition:background var(--dur)}
+.btn:hover{background:var(--elevated)}
+.btn[aria-pressed="true"],.btn.primary{background:var(--accent);border-color:var(--accent)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:16px 0}
+.flow button{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px 8px;min-height:64px;font:inherit;font-size:14px;cursor:pointer;text-align:center}
+.flow button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:var(--surface)}
+.flow .s{display:block;font-family:var(--mono);font-size:11px;color:var(--subtle)}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+.io h4{margin:0 0 8px;font-size:13px;color:var(--muted);font-weight:500;text-transform:none}
+.pre{font-family:var(--mono);font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;overflow-x:auto;white-space:pre}
+.hero{padding:24px 0 8px}
+.rule{border-left:3px solid var(--accent);padding-left:16px;margin:16px 0}
+footer{border-top:1px solid var(--border);color:var(--muted);font-size:13px;padding:24px;max-width:1440px;margin:0 auto}
+@media (max-width:1024px){
+  .layout{grid-template-columns:1fr;gap:16px}
+  nav.index{display:none}
+  .mobile-index{display:block;margin-bottom:8px}
+  .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flow{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .top-in,.layout{padding-left:16px;padding-right:16px}
+  .grid2,.grid3,.grid4,.io{grid-template-columns:1fr}
+  .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bar{grid-template-columns:1fr 60px;grid-template-areas:"n v" "t t"}
+  .bar .n{grid-area:n}.bar .v{grid-area:v}.bar .track{grid-area:t}
+  .card{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media (min-width:1800px){
+  body{font-size:19px}
+  .layout{max-width:1700px}
+}
+</style>
+</head>
+<body class="no-js">
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><i aria-hidden="true"></i>Unidata<small>E-commerce Insights · análise histórica da base Olist</small></div>
+    <div class="note" id="posicao" aria-live="polite">Capítulo 1 de 8</div>
+  </div>
+  <div class="progress" aria-hidden="true"><b id="barra"></b></div>
+</header>
+
+<div class="layout">
+  <nav class="index" aria-label="Capítulos">
+    <ol id="indice"></ol>
+  </nav>
+
+  <main id="conteudo" tabindex="-1">
+    <div class="mobile-index">
+      <label class="note" for="selecao">Ir para o capítulo</label>
+      <select id="selecao"></select>
+    </div>
+
+    <!-- 1 -->
+    <section class="chapter" id="cap1" data-title="Introdução" aria-labelledby="t1">
+      <div class="hero">
+        <p class="eyebrow">Big Data · Spec-Driven Development</p>
+        <h1 id="t1">Introdução</h1>
+        <p class="lead">Os dados de um e-commerce ficam espalhados em várias tabelas. O Unidata junta essas tabelas e responde, de forma rastreável, a três perguntas de um analista de negócio.</p>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <h3>Contextualização</h3>
+          <p>Pedidos, itens, clientes e produtos vivem em arquivos separados e não dizem, por si sós, quais clientes priorizar, quando as vendas foram maiores ou quais categorias merecem destaque.</p>
+          <p class="note">Base: <em>Brazilian E-Commerce Public Dataset by Olist</em> (Kaggle), com pedidos reais anonimizados de aproximadamente setembro de 2016 a setembro de 2018, licença CC BY-NC-SA 4.0.</p>
+        </div>
+        <div class="card">
+          <h3>Motivação</h3>
+          <ul class="clean">
+            <li>Quais segmentos de clientes podem ser priorizados em campanhas?</li>
+            <li>Em quais meses históricos a atividade de vendas foi maior ou menor?</li>
+            <li>Quais categorias merecem atenção, segundo as vendas observadas?</li>
+          </ul>
+          <p class="note" style="margin-top:12px">O projeto nasceu como MVP acadêmico de Big Data e foi escrito primeiro como especificação (<code>spec.md</code>); o código veio depois.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="chapter" id="cap2" data-title="Objetivos" aria-labelledby="t2">
+      <p class="eyebrow">O que se pretende alcançar</p>
+      <h2 id="t2">Objetivos</h2>
+      <p class="lead">Entregar um painel local, em português, em que cada número possa ser rastreado até os dados de origem.</p>
+      <div class="grid2">
+        <div class="card">
+          <h3>Objetivo geral</h3>
+          <p>Transformar a base da Olist em indicadores, sazonalidade mensal, segmentos de clientes (RFM + K-means) e recomendações explicáveis.</p>
+        </div>
+        <div class="card">
+          <h3>Objetivos específicos</h3>
+          <ul class="clean">
+            <li>Calcular KPIs sem duplicar receita nas junções.</li>
+            <li>Segmentar clientes de forma reprodutível.</li>
+            <li>Mostrar a evidência numérica ao lado de cada recomendação.</li>
+            <li>Exibir fonte, período, metodologia e limitações na própria interface.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>O que o projeto não faz</h3>
+        <p>Não dispara campanhas, não prevê vendas futuras, não aceita upload de outra base e não afirma representar todo o comércio eletrônico brasileiro.</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="chapter" id="cap3" data-title="Fundamentação teórica" aria-labelledby="t3">
+      <p class="eyebrow">Conceitos e técnicas aplicadas</p>
+      <h2 id="t3">Fundamentação teórica</h2>
+      <p class="lead">Cada técnica entra para resolver um problema concreto do projeto.</p>
+      <div class="grid2">
+        <div class="card">
+          <h3>Big Data e integração de fontes</h3>
+          <p>Os dados chegam em vários arquivos relacionados por chaves (<code>order_id</code>, <code>customer_id</code>, <code>product_id</code>). O trabalho de Big Data aqui é carregar, validar, limpar e juntar essas tabelas antes de analisar. A base tem cerca de 100 mil pedidos e é processada em memória, localmente.</p>
+        </div>
+        <div class="card">
+          <h3>Granularidade e duplicação</h3>
+          <p>Um pedido pode ter vários itens e vários pagamentos. Somar <code>payment_value</code> junto com <code>price</code> contaria a mesma venda mais de uma vez; por isso a receita de produtos usa só <code>price</code> dos itens entregues.</p>
+        </div>
+        <div class="card">
+          <h3>RFM</h3>
+          <p>Resume cada cliente em três números: <strong>Recência</strong> (dias desde a última compra, contados a partir da maior data da base), <strong>Frequência</strong> (pedidos distintos) e <strong>Monetário</strong> (soma de <code>price</code>).</p>
+        </div>
+        <div class="card">
+          <h3>K-means com padronização</h3>
+          <p>Agrupa clientes parecidos em <code>k=4</code> grupos. Antes, aplica <code>log1p</code> em frequência e gasto (reduz assimetria) e <code>StandardScaler</code> nas três dimensões. Com <code>random_state=42</code> e <code>n_init=10</code>, o resultado se repete.</p>
+        </div>
+        <div class="card">
+          <h3>Sazonalidade descritiva</h3>
+          <p>Agregação por mês calendário (<code>YYYY-MM</code>) para ver o padrão histórico observado. É descrição, não previsão nem causalidade.</p>
+        </div>
+        <div class="card">
+          <h3>Recomendação por regras</h3>
+          <p>Regras determinísticas geram texto cauteloso (“considere”, “avalie”) com evidência e ressalva. Mesma entrada, mesma saída; nada de caixa-preta.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="chapter" id="cap4" data-title="Metodologia / pipeline de dados" aria-labelledby="t4">
+      <p class="eyebrow">Coleta, limpeza, processamento e análise</p>
+      <h2 id="t4">Metodologia / pipeline de dados</h2>
+      <p class="lead">Do CSV à recomendação, em seis etapas. Clique em uma etapa para ver o que entra e o que sai.</p>
+      <p><span class="label">Simulação ilustrativa</span> <span class="note">Este percurso é didático: não executa código nem lê arquivos. Os módulos citados existem em <code>src/unidata/</code>.</span></p>
+      <div class="flow" id="fluxo" role="group" aria-label="Etapas do pipeline"></div>
+      <div class="card" id="fluxo-detalhe" aria-live="polite"></div>
+      <div class="grid2" style="margin-top:16px">
+        <div class="card">
+          <h3>Infraestrutura</h3>
+          <p>Aplicativo local de processo único: sem banco de dados, API externa, autenticação ou persistência. Os CSVs são lidos do disco, processados em memória com pandas e exibidos pelo Streamlit. Um cache evita reler a base quando só os filtros mudam.</p>
+        </div>
+        <div class="card">
+          <h3>Regras do cálculo</h3>
+          <ul class="clean">
+            <li>Só pedidos <code>delivered</code>.</li>
+            <li>Receita = soma de <code>price</code>, sem frete.</li>
+            <li>Clientes = <code>customer_unique_id</code> distintos.</li>
+            <li>Ticket médio = receita ÷ pedidos entregues.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="chapter" id="cap5" data-title="Ferramentas utilizadas" aria-labelledby="t5">
+      <p class="eyebrow">Bibliotecas, linguagens, plataformas</p>
+      <h2 id="t5">Ferramentas utilizadas</h2>
+      <p class="lead">Filtre por etapa para ver onde cada ferramenta entra.</p>
+      <div class="row" id="filtro-tec" role="group" aria-label="Filtrar ferramentas por etapa"></div>
+      <div class="grid3" id="lista-tec" style="margin-top:16px"></div>
+    </section>
+
+    <!-- 6 -->
+    <section class="chapter" id="cap6" data-title="Resultados obtidos" aria-labelledby="t6">
+      <p class="eyebrow">Gráficos, tabelas, insights e observações</p>
+      <h2 id="t6">Resultados obtidos</h2>
+      <p class="lead">O pipeline foi verificado sobre dados sintéticos de teste. Os CSVs reais da Olist não são distribuídos com o projeto.</p>
+      <p><span class="label data">Fixture sintética de teste, não é a base da Olist</span></p>
+      <p class="note">Os valores abaixo foram calculados pelas funções reais do projeto (<code>compute_kpis</code>, <code>compute_monthly_series</code>, <code>compute_category_ranking</code>) sobre <code>tests/fixtures/standard_olist</code>, um conjunto minúsculo criado só para testar. Eles não dizem nada sobre o comportamento do e-commerce real.</p>
+
+      <div class="grid4" style="margin:16px 0">
+        <div class="card"><div class="kpi">R$ 900,00</div><div class="kpi-l">Receita de produtos (sem frete)</div></div>
+        <div class="card"><div class="kpi">5</div><div class="kpi-l">Pedidos entregues</div></div>
+        <div class="card"><div class="kpi">4</div><div class="kpi-l">Clientes únicos</div></div>
+        <div class="card"><div class="kpi">R$ 180,00</div><div class="kpi-l">Ticket médio por pedido</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h3>Receita de produtos por mês</h3>
+          <p class="note">Fixture sintética. Meses sem pedidos entregues aparecem como lacuna, não como zero.</p>
+          <div class="scroll"><table>
+            <caption class="note" style="text-align:left;padding-bottom:6px">Mensal, valores em R$ nominais</caption>
+            <thead><tr><th>Mês</th><th class="num">Receita</th><th class="num">Pedidos</th><th class="num">Ticket médio</th></tr></thead>
+            <tbody>
+              <tr><td>2017-10</td><td class="num">R$ 150,50</td><td class="num">1</td><td class="num">R$ 150,50</td></tr>
+              <tr><td>2017-11</td><td class="num">R$ 280,00</td><td class="num">2</td><td class="num">R$ 140,00</td></tr>
+              <tr><td>2017-12</td><td class="num" colspan="3"><span class="muted">sem pedidos entregues na fixture</span></td></tr>
+              <tr><td>2018-01</td><td class="num">R$ 469,50</td><td class="num">2</td><td class="num">R$ 234,75</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <h3>Categorias por receita de produtos</h3>
+          <p class="note">Fixture sintética. A categoria sem nome vira “Não informado”.</p>
+          <div class="bar"><span class="n">sports_leisure</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="v">R$ 420</span></div>
+          <div class="bar"><span class="n">bed_bath_table</span><span class="track"><span class="fill" style="width:71.4%"></span></span><span class="v">R$ 300</span></div>
+          <div class="bar"><span class="n">pc_gamer</span><span class="track"><span class="fill" style="width:23.8%"></span></span><span class="v">R$ 100</span></div>
+          <div class="bar"><span class="n">Não informado</span><span class="track"><span class="fill" style="width:19%"></span></span><span class="v">R$ 80</span></div>
+          <p class="note" style="margin-top:8px">Participação: 46,7% · 33,3% · 11,1% · 8,9%.</p>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:16px">
+        <div class="card">
+          <h3>Segmentação RFM + K-means</h3>
+          <p>Sobre a fixture (4 clientes), o ajuste com <code>k=4</code> devolve 4 segmentos, cada um descrito por recência, frequência e gasto medianos. Com menos de 4 clientes, o painel mostra um erro interpretável em vez de rotular um resultado inválido.</p>
+        </div>
+        <div class="card">
+          <h3>Observações verificadas</h3>
+          <ul class="clean">
+            <li>Pedido com vários itens e vários pagamentos não duplica a receita.</li>
+            <li>Cliente com IDs diferentes conta uma vez (<code>customer_unique_id</code>).</li>
+            <li>Sem os CSVs, a tela lista os arquivos esperados, sem traceback.</li>
+            <li>Rodar duas vezes a segmentação dá o mesmo resultado.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note" style="margin-top:16px">Para ver os resultados com dados reais: baixe a base no Kaggle, copie os CSVs para <code>data/</code> e rode <code>streamlit run app.py</code>.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="chapter" id="cap7" data-title="Discussão e limitações" aria-labelledby="t7">
+      <p class="eyebrow">Interpretação dos resultados e desafios enfrentados</p>
+      <h2 id="t7">Discussão e limitações</h2>
+      <p class="lead">O que já está provado, o que ainda não foi verificado e o que ficou de fora.</p>
+      <div class="row" id="filtro-status" role="group" aria-label="Filtrar por situação"></div>
+      <div class="stack" id="lista-status" style="margin-top:16px"></div>
+
+      <div class="grid2" style="margin-top:24px">
+        <div class="card">
+          <h3>Desafios enfrentados</h3>
+          <ul class="clean">
+            <li>Evitar a dupla contagem de receita ao juntar itens e pagamentos.</li>
+            <li>Dar identidade estável ao cliente: <code>customer_id</code> muda a cada compra.</li>
+            <li>Dar sentido de negócio aos clusters sem confiar no número que o K-means devolve.</li>
+            <li>Manter o painel útil quando uma parte falha (por exemplo, o K-means).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Limitações</h3>
+          <ul class="clean">
+            <li>A base cobre ≈ 2016–2018 e um único marketplace: não representa o e-commerce brasileiro.</li>
+            <li>Padrões históricos não são previsão nem prova de causa.</li>
+            <li><code>k=4</code> é fixo por decisão de projeto; clusters são uma partição estatística.</li>
+            <li>Valores nominais, sem correção inflacionária.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="chapter" id="cap8" data-title="Conclusão e referências" aria-labelledby="t8">
+      <p class="eyebrow">Fechamento</p>
+      <h2 id="t8">Conclusão e referências</h2>
+      <p class="lead">Um MVP pequeno, reprodutível e honesto sobre o que mostra.</p>
+      <div class="card">
+        <h3>Conclusão</h3>
+        <p>O Unidata mostra que, com uma especificação clara, é possível transformar tabelas transacionais em indicadores, sazonalidade, segmentos e recomendações que carregam a própria evidência. O que o projeto entrega está coberto por testes sobre dados sintéticos; a análise com dados reais depende de quem baixar a base e seguir o README.</p>
+        <p>Próximos passos naturais, fora do escopo atual: comparar valores de <code>k</code>, corrigir valores pela inflação e aceitar outras bases. São ideias, não funcionalidades disponíveis.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Fonte dos dados e licença</h3>
+        <p>Olist, <em>Brazilian E-Commerce Public Dataset by Olist</em>, Kaggle. Licença <strong>CC BY-NC-SA 4.0</strong>: uso exclusivamente não comercial, com atribuição e compartilhamento pela mesma licença. O projeto não redistribui os CSVs.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Referências</h3>
+        <ol class="clean">
+          <li>Olist. <em>Brazilian E-Commerce Public Dataset by Olist</em>. Kaggle. <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" rel="noopener">kaggle.com/datasets/olistbr/brazilian-ecommerce</a></li>
+          <li>Creative Commons. <em>Atribuição-NãoComercial-CompartilhaIgual 4.0 Internacional</em>. <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener">creativecommons.org/licenses/by-nc-sa/4.0</a></li>
+          <li>Documentação do pandas, scikit-learn (<code>StandardScaler</code>, <code>KMeans</code>), Streamlit e Plotly.</li>
+          <li>Skill <em>project-showcase</em>, usada como referência de formato desta apresentação: <a href="https://github.com/isjoaovictor/project_showcase_skill" rel="noopener">github.com/isjoaovictor/project_showcase_skill</a></li>
+          <li>Documentos do projeto: <code>spec.md</code>, <code>requirements.md</code>, <code>design.md</code>, <code>tasks.md</code> e <code>README.md</code>.</li>
+        </ol>
+        <p class="note">Autoria e créditos da equipe não estão documentados no repositório e, por isso, não aparecem aqui.</p>
+      </div>
+    </section>
+
+    <div class="pager">
+      <button class="btn" id="ant" type="button">← Anterior</button>
+      <button class="btn primary" id="prox" type="button">Próximo →</button>
+    </div>
+  </main>
+</div>
+
+<footer>
+  Unidata · E-commerce Insights · Dados: Olist (Kaggle), CC BY-NC-SA 4.0, uso não comercial. Números do capítulo 6: fixture sintética de teste. Navegue com ← → ou teclas 1–8.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.body.classList.remove("no-js");
+
+  var chapters = Array.prototype.slice.call(document.querySelectorAll(".chapter"));
+  var indice = document.getElementById("indice");
+  var selecao = document.getElementById("selecao");
+  var barra = document.getElementById("barra");
+  var posicao = document.getElementById("posicao");
+  var ant = document.getElementById("ant");
+  var prox = document.getElementById("prox");
+  var atual = 0;
+
+  chapters.forEach(function(ch, i){
+    var title = ch.getAttribute("data-title");
+    var li = document.createElement("li");
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = '<span class="n">' + (i+1) + '</span>' + title;
+    b.addEventListener("click", function(){ ir(i, true); });
+    li.appendChild(b); indice.appendChild(li);
+    var o = document.createElement("option");
+    o.value = i; o.textContent = (i+1) + ". " + title;
+    selecao.appendChild(o);
+  });
+  selecao.addEventListener("change", function(){ ir(parseInt(selecao.value, 10), true); });
+
+  function ir(i, foco){
+    if (i < 0 || i >= chapters.length) return;
+    atual = i;
+    chapters.forEach(function(ch, k){ ch.classList.toggle("is-active", k === i); });
+    Array.prototype.forEach.call(indice.querySelectorAll("button"), function(b, k){
+      if (k === i) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
+    });
+    selecao.value = i;
+    barra.style.width = ((i+1) / chapters.length * 100) + "%";
+    posicao.textContent = "Capítulo " + (i+1) + " de " + chapters.length;
+    ant.disabled = i === 0;
+    prox.disabled = i === chapters.length - 1;
+    history.replaceState(null, "", "#cap" + (i+1));
+    if (foco){ window.scrollTo({top:0}); var h = chapters[i].querySelector("h1,h2"); if (h){ h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); } }
+  }
+  ant.addEventListener("click", function(){ ir(atual-1, true); });
+  prox.addEventListener("click", function(){ ir(atual+1, true); });
+  document.addEventListener("keydown", function(e){
+    var t = e.target.tagName;
+    if (t === "SELECT" || t === "INPUT" || t === "TEXTAREA" || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === "ArrowRight") { ir(atual+1, true); }
+    else if (e.key === "ArrowLeft") { ir(atual-1, true); }
+    else if (/^[1-8]$/.test(e.key)) { ir(parseInt(e.key,10)-1, true); }
+  });
+
+  /* ---- Capítulo 4: pipeline (Simulação ilustrativa) ---- */
+  var etapas = [
+    {nome:"Coletar", mod:"loader.py",
+     entra:"Arquivos CSV na pasta data/ (pedidos, itens, clientes, produtos e, opcionalmente, tradução de categorias).",
+     sai:"Tabelas lidas, com colunas obrigatórias verificadas. Se faltar algo, uma mensagem em português lista os arquivos e como baixá-los.",
+     ex:"orders · order_items · customers · products"},
+    {nome:"Limpar", mod:"pipeline.py",
+     entra:"Tabelas lidas, com IDs, textos e datas ainda crus.",
+     sai:"IDs e textos normalizados, datas convertidas e linhas sem chave essencial descartadas, com contagem no diagnóstico de dados.",
+     ex:"order_purchase_timestamp → data e hora\ncategoria nula → “Não informado”"},
+    {nome:"Juntar", mod:"pipeline.py",
+     entra:"Pedidos entregues, itens, clientes e produtos.",
+     sai:"Uma linha por item vendido, ligada ao pedido, ao cliente único e à categoria. Pagamentos ficam de fora para não duplicar receita.",
+     ex:"item → pedido → customer_unique_id → categoria"},
+    {nome:"Agregar", mod:"analytics.py",
+     entra:"Itens entregues já ligados a pedido, cliente e categoria.",
+     sai:"KPIs gerais, série mensal em ordem cronológica e ranking de categorias por receita de produtos.",
+     ex:"receita = soma de price\nticket = receita ÷ pedidos"},
+    {nome:"Segmentar", mod:"segmentation.py",
+     entra:"Itens entregues, agrupados por customer_unique_id.",
+     sai:"Tabela RFM e 4 segmentos (K-means com k=4), com perfil numérico e rótulo criado depois do ajuste.",
+     ex:"recência · log1p(frequência) · log1p(gasto)\n→ StandardScaler → KMeans"},
+    {nome:"Recomendar", mod:"recommendations.py",
+     entra:"KPIs, série mensal, categorias e segmentos.",
+     sai:"Cartões com ação cautelosa, evidência numérica, período e ressalva. Sem evidência suficiente, nenhuma recomendação.",
+     ex:"“Avalie campanhas para o segmento X…”\n+ evidência + ressalva"}
+  ];
+  var fluxo = document.getElementById("fluxo");
+  var det = document.getElementById("fluxo-detalhe");
+  function mostrarEtapa(i){
+    Array.prototype.forEach.call(fluxo.children, function(b, k){ b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+    var e = etapas[i];
+    det.innerHTML = '<p class="eyebrow">Etapa ' + (i+1) + ' de ' + etapas.length + ' · ' + e.mod + '</p>' +
+      '<h3>' + e.nome + '</h3>' +
+      '<div class="io"><div><h4>O que entra</h4><p>' + e.entra + '</p></div><div><h4>O que sai</h4><p>' + e.sai + '</p></div></div>' +
+      '<div class="pre" aria-label="Exemplo ilustrativo">' + e.ex.replace(/&/g,"&amp;").replace(/</g,"&lt;") + '</div>' +
+      '<p class="note" style="margin-top:12px"><span class="label">Simulação ilustrativa</span> Exemplo didático, não é saída de uma execução real.</p>';
+  }
+  etapas.forEach(function(e, i){
+    var b = document.createElement("button");
+    b.type = "button"; b.setAttribute("aria-pressed", "false");
+    b.innerHTML = '<span class="s">' + (i+1) + '</span>' + e.nome;
+    b.addEventListener("click", function(){ mostrarEtapa(i); });
+    fluxo.appendChild(b);
+  });
+  mostrarEtapa(0);
+
+  /* ---- Capítulo 5: ferramentas ---- */
+  var tecs = [
+    {n:"Python", e:["Coletar","Limpar","Juntar","Agregar","Segmentar","Recomendar","Interface"], p:"Linguagem única do projeto: ecossistema de dados e prototipagem rápida."},
+    {n:"pandas", e:["Coletar","Limpar","Juntar","Agregar"], p:"Lê os CSVs, junta as tabelas e agrega por mês, categoria e cliente, em memória."},
+    {n:"scikit-learn", e:["Segmentar"], p:"StandardScaler e KMeans para segmentar clientes de forma reprodutível."},
+    {n:"Streamlit", e:["Interface"], p:"Painel web local, sem backend próprio, com cache da base carregada."},
+    {n:"Plotly", e:["Interface"], p:"Gráficos com título, unidade e tooltip com o valor."},
+    {n:"pytest", e:["Coletar","Limpar","Juntar","Agregar","Segmentar","Recomendar"], p:"Testes unitários e de integração sobre fixtures sintéticas."},
+    {n:"Playwright", e:["Interface"], p:"Testes ponta a ponta do painel em navegador real e verificação de viewports."},
+    {n:"Git e GitHub", e:["Entrega"], p:"Versionamento do código; os CSVs da Olist ficam fora do repositório (.gitignore)."}
+  ];
+  var grupos = ["Todas","Coletar","Limpar","Juntar","Agregar","Segmentar","Recomendar","Interface","Entrega"];
+  var ft = document.getElementById("filtro-tec"), lt = document.getElementById("lista-tec");
+  function pintarTec(g){
+    Array.prototype.forEach.call(ft.children, function(b){ b.setAttribute("aria-pressed", b.textContent === g ? "true" : "false"); });
+    lt.innerHTML = "";
+    tecs.filter(function(t){ return g === "Todas" || t.e.indexOf(g) > -1; }).forEach(function(t){
+      var d = document.createElement("div"); d.className = "card";
+      d.innerHTML = '<h3>' + t.n + '</h3><p>' + t.p + '</p><p class="note">Entra em: ' + t.e.join(", ") + '</p>';
+      lt.appendChild(d);
+    });
+  }
+  grupos.forEach(function(g){
+    var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = g;
+    b.setAttribute("aria-pressed", "false"); b.addEventListener("click", function(){ pintarTec(g); }); ft.appendChild(b);
+  });
+  pintarTec("Todas");
+
+  /* ---- Capítulo 7: situação das funcionalidades ---- */
+  var feats = [
+    {n:"Carga e validação dos CSVs, com instruções quando faltam arquivos", s:"Implementado", c:"ok", ev:"src/unidata/loader.py · tests/test_loader.py"},
+    {n:"Limpeza e junção sem duplicar receita", s:"Implementado", c:"ok", ev:"src/unidata/pipeline.py · tests/test_pipeline.py"},
+    {n:"KPIs, série mensal e ranking de categorias", s:"Implementado", c:"ok", ev:"src/unidata/analytics.py · tests/test_analytics.py"},
+    {n:"RFM + K-means (k=4, random_state=42, n_init=10)", s:"Implementado", c:"ok", ev:"src/unidata/segmentation.py · tests/test_segmentation.py"},
+    {n:"Recomendações explicáveis com evidência e ressalva", s:"Implementado", c:"ok", ev:"src/unidata/recommendations.py · tests/test_recommendations.py"},
+    {n:"Painel Streamlit em português, com filtros e estados de erro", s:"Implementado", c:"ok", ev:"app.py · src/unidata/ui/ · tests/test_ui_smoke.py"},
+    {n:"Execução e resultados sobre a base real da Olist", s:"Não verificado", c:"warn", ev:"Os CSVs não estão no repositório; os testes usam fixtures sintéticas."},
+    {n:"Upload de outra base, previsão de vendas, disparo de campanhas", s:"Planejado", c:"info", ev:"Fora do escopo do MVP (spec.md, seção 4)."}
+  ];
+  var statusList = ["Todos","Implementado","Não verificado","Planejado"];
+  var fs = document.getElementById("filtro-status"), ls = document.getElementById("lista-status");
+  function pintarStatus(g){
+    Array.prototype.forEach.call(fs.children, function(b){ b.setAttribute("aria-pressed", b.textContent === g ? "true" : "false"); });
+    ls.innerHTML = "";
+    feats.filter(function(f){ return g === "Todos" || f.s === g; }).forEach(function(f){
+      var d = document.createElement("div"); d.className = "card";
+      d.innerHTML = '<span class="tag ' + f.c + '">' + f.s + '</span><h3 style="margin-top:8px">' + f.n + '</h3><p class="note" style="margin:0">Evidência: ' + f.ev + '</p>';
+      ls.appendChild(d);
+    });
+  }
+  statusList.forEach(function(g){
+    var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = g;
+    b.setAttribute("aria-pressed", "false"); b.addEventListener("click", function(){ pintarStatus(g); }); fs.appendChild(b);
+  });
+  pintarStatus("Todos");
+
+  var m = /^#cap([1-8])$/.exec(location.hash);
+  ir(m ? parseInt(m[1],10)-1 : 0, false);
+})();
+</script>
+</body>
+</html>
